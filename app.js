@@ -41,10 +41,10 @@ client.on('ready', () => {
 });
 
 const areas = {
-    'servicio al cliente': 'atención en este chat',
-    'soporte': '+573209501615',
-    'cartera': '+573012932329',
-    'dirección': '+573103773928'
+    '1': 'servicio al cliente',
+    '2': 'soporte',
+    '3': 'cartera',
+    '4': 'dirección'
 };
 
 const conversations = {};
@@ -56,8 +56,8 @@ function normalizeText(text) {
 function matchArea(input) {
     const normalizedInput = normalizeText(input);
     for (const [key, value] of Object.entries(areas)) {
-        if (normalizedInput.includes(normalizeText(key))) {
-            return key;
+        if (normalizedInput.includes(normalizeText(key)) || normalizedInput === key) {
+            return value;
         }
     }
     return null;
@@ -80,11 +80,11 @@ async function handleConversation(msg) {
         case 'inicio':
             if (normalizeText(msg.body).includes('hola')) {
                 await sendMessage(from, `Hola! Bienvenido a nuestro servicio de atención.
-Por favor, elige el área con la que deseas comunicarte:
-• Servicio al cliente
-• Soporte
-• Cartera
-• Dirección`);
+Por favor, elige el área con la que deseas comunicarte (o escribe el número correspondiente):
+1. Servicio al cliente
+2. Soporte
+3. Cartera
+4. Dirección`);
                 conversation.step = 'seleccion_area';
             } else {
                 await sendMessage(from, 'Por favor, inicia la conversación con un "Hola".');
@@ -109,7 +109,7 @@ Por favor, elige el área con la que deseas comunicarte:
 
         case 'nombre':
             conversation.nombre = msg.body;
-            const redirectNumber = areas[conversation.selectedArea];
+            const redirectNumber = Object.entries(areas).find(([key, value]) => value === conversation.selectedArea)[0];
             const areaName = conversation.selectedArea.charAt(0).toUpperCase() + conversation.selectedArea.slice(1);
             const link = `https://wa.me/${redirectNumber.replace('+', '')}?text=Hola,+soy+${conversation.nombre}.+Me+ comunico+con+el+área+de+${areaName}.`;
             await sendMessage(from, `Gracias, ${conversation.nombre}. Te estamos redirigiendo al área de ${conversation.selectedArea}. Por favor, haz clic en este enlace: ${link}`);
