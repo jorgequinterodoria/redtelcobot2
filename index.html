@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Bot QR Code</title>
+    <!-- Cargar socket.io desde una CDN -->
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #qrcode {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="qrcode">
+        <h1>Escanea el código QR para conectar el bot de WhatsApp</h1>
+        <img id="qr-image" src="" alt="QR Code">
+        <p id="status"></p>
+    </div>
+
+    <script>
+        const socket = io();
+        const qrImage = document.getElementById('qr-image');
+        const status = document.getElementById('status');
+
+        socket.on('qr', (src) => {
+            qrImage.src = src;
+            status.textContent = 'Escanea el código QR con WhatsApp';
+        });
+
+        socket.on('ready', (message) => {
+            qrImage.style.display = 'none';
+            status.textContent = message;
+        });
+    </script>
+</body>
+</html>
